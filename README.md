@@ -2,46 +2,6 @@
 
 An app that allows you to create your own screen layout by rearranging screen elements.
 
-Then update the lockfile and check nothing still refers to the deleted runtime:
-
-```bash
-vp install
-git grep -n -i -e backend-node -- ':!README.md' ':!.claude/skills/check-secrets' ':!.claude/agents/web-security-auditor.md'                          # kept Cloudflare Workers
-git grep -n -i -e backend-worker -e wrangler -e workerd -- ':!README.md' ':!.claude/skills/check-secrets' ':!.claude/agents/web-security-auditor.md' # kept Node.js
-```
-
-(`.claude/skills/check-secrets` and `.claude/agents/web-security-auditor.md` cover both runtimes conditionally, so they stay either way.)
-
-4. Rename the project and set its time zone:
-
-- Root `package.json` — `name`
-- `packages/utils/src/date/zone.ts` — `TIME_ZONE_OFFSET_MINUTES` if the app's time zone isn't JST (UTC+9)
-- `apps/frontend/.env` — `VITE_APP_TITLE` (browser tab title and app bar)
-- `apps/backend-worker/wrangler.jsonc` — `name` if you kept Cloudflare Workers (the Worker's name; must be unique per account, or deploys overwrite each other)
-- `README.md` — title and description (this file)
-
-Then check nothing still refers to the template:
-
-```bash
-git grep -n -i fullstack-typescript -- ':!README.md'
-```
-
-5. Install dependencies and confirm everything works:
-
-```bash
-vp install
-vp run ready
-```
-
-6. Commit the result and push to the new remote:
-
-```bash
-git add -A
-git commit -m "chore: initial commit from fullstack-typescript template"
-git branch -M main
-git push -u origin main
-```
-
 ## Development
 
 The frontend is served at `/` and the API at `/api` on the same origin, in development and in
@@ -104,34 +64,6 @@ vp run backend#check
 
 ```bash
 vp run backend#test
-```
-
-## apps/backend-worker
-
-Runs `apps/backend` on Cloudflare Workers.
-
-- Debug locally (reloads on changes in `apps/backend` too):
-
-```bash
-vp run backend-worker#dev
-```
-
-- Build (frontend + dry-run Worker bundle):
-
-```bash
-vp run -t backend-worker#build
-```
-
-- Deploy (frontend + API, one Worker):
-
-```bash
-vp run backend-worker#deploy
-```
-
-- Regenerate Workers binding types:
-
-```bash
-vp run backend-worker#cf-typegen
 ```
 
 ## apps/backend-node
