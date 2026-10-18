@@ -4,6 +4,7 @@ import {
   addDays,
   addMonths,
   addYears,
+  ageInYears,
   diffInDays,
   endOfDay,
   isSameDay,
@@ -84,4 +85,12 @@ test('diffInDays counts calendar days between two dates', () => {
   // 2026-06-20 00:30 JST vs 2026-06-15 23:30 JST.
   expect(diffInDays(new Date('2026-06-19T15:30:00Z'), new Date('2026-06-15T14:30:00Z'))).toBe(5)
   expect(diffInDays(new Date('2026-06-15T14:30:00Z'), new Date('2026-06-19T15:30:00Z'))).toBe(-5)
+})
+
+test('age changes at the birthday in JST, not UTC or a fixed demo age', () => {
+  const birth = new Date('1955-11-02T00:00:00+09:00')
+  expect(ageInYears(birth, new Date('2026-11-01T14:59:59Z'))).toBe(70)
+  expect(ageInYears(birth, new Date('2026-11-01T15:00:00Z'))).toBe(71)
+  expect(ageInYears(new Date('2027-01-01'), new Date('2026-10-17'))).toBeNull()
+  expect(ageInYears(new Date('invalid'), new Date())).toBeNull()
 })

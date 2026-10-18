@@ -246,12 +246,12 @@ importers:
       '@tanstack/vue-query':
         specifier: 'catalog:'
         version: 5.104.1(vue@3.5.43(typescript@6.0.3))
-      hono:
-        specifier: ^4.13.7
-        version: 4.13.13
       pinia:
         specifier: ^4.0.3
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.43(typescript@6.0.3))
+      utils:
+        specifier: workspace:*
+        version: link:../../packages/utils
       vue:
         specifier: ^3.5.43
         version: 3.5.43(typescript@6.0.3)
@@ -265,9 +265,6 @@ importers:
       '@vitejs/plugin-vue':
         specifier: ^6.0.9
         version: 6.0.9(@voidzero-dev/vite-plus-core@1.1.0(@types/node@24.19.1)(@volar/typescript@2.4.28(typescript@6.0.3))(@vue/language-core@3.3.12)(esbuild@0.28.1)(tsx@4.23.15)(typescript@6.0.3)(vue-tsc@3.3.12(typescript@6.0.3)))(vue@3.5.43(typescript@6.0.3))
-      backend:
-        specifier: workspace:*
-        version: link:../backend
       typescript:
         specifier: ^6.0.3
         version: 6.0.3

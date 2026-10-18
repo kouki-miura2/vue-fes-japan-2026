@@ -1,0 +1,80 @@
+.widget-card .b {
+  font-weight: 700;
+}
+.widget-card .lbl,
+.widget-card .muted,
+.widget-card .sec {
+  color: #5e6a67;
+}
+.widget-card .ink2 {
+  color: #4a5653;
+}
+.widget-card .lvfg-crit,
+.widget-card .flag-h {
+  color: #b42318;
+  font-weight: 700;
+}
+.widget-card .lvfg-warn {
+  color: #8a5300;
+  font-weight: 700;
+}
+.widget-card .lvfg-ok {
+  color: #1e6b43;
+}
+.widget-card .lvfg-info {
+  color: #0e5f58;
+}
+.widget-card .flag-l {
+  color: #2450a6;
+  font-weight: 700;
+}
+.widget-card .lvbg-crit {
+  background: #fdecea;
+}
+.widget-card .lvbg-warn {
+  background: #fff2d6;
+}
+.widget-card .lvbg-ok {
+  background: #e5f3ea;
+}
+.widget-card .lvbg-info {
+  background: #e2f0ee;
+}
+.widget-card .tile {
+  border: 1px solid #e6eae8;
+  border-radius: 7px;
+  padding: 6px 8px;
+}
+.widget-card .dotrow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+  border-bottom: 1px dotted #dde2e0;
+}
+.widget-card p,
+.widget-card dl {
+  margin: 0;
+}
+.widget-card section,
+.widget-card .widget-body > * {
+  flex-shrink: 0;
+}
+.widget-card .v-chip {
+  max-width: 100%;
+  height: auto;
+  min-height: 30px;
+  white-space: normal;
+}
+.widget-card .v-chip__content {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.widget-card .widget-body {
+  overflow-wrap: anywhere;
+}
+
+.widget-card .v-alert {
+  flex: 0 0 auto;
+}

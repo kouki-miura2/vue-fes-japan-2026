@@ -1,121 +1,104 @@
-# Vue Fes Japan 2026
+# 医療業務支援フロントエンド
 
-An app that allows you to create your own screen layout by rearranging screen elements.
+Vue 3 + Vuetify 4で、14種類の画面コンポーネントを職種・病棟ごとに配置できるタブレット向けデモです。バックエンドを起動せずにログイン、業務画面、レイアウト編集、端末設定を操作できます。
 
-## Development
+## 起動
 
-The frontend is served at `/` and the API at `/api` on the same origin, in development and in
-production. Run both dev servers and open the frontend's URL; it proxies `/api` to the backend
-(`localhost:8787`):
+Node.js 22.18以降とVite+ CLI（`vp`）を使用します。
 
-```bash
-vp run dev-b   # backend
-vp run dev-f   # frontend
-```
-
-In production, the backend runtime serves both: the Worker (`apps/backend-worker`) serves the
-frontend build as static assets, and the Node.js server (`apps/backend-node`) serves it with
-`serveStatic`. Both list `frontend` as a workspace dependency, so `vp run -r build` (or `-t` for
-one package) builds the frontend once, before them; the Worker's `deploy` builds it itself.
-
-- Check everything is ready:
-
-```bash
-vp run ready
-```
-
-- Run all tests:
-
-```bash
-vp run -r test
-```
-
-- Build everything:
-
-```bash
-vp run -r build
-```
-
-## packages/utils
-
-- Run format/lint/type checks:
-
-```bash
-vp run utils#check
-```
-
-- Run the tests:
-
-```bash
-vp run utils#test
-```
-
-## apps/backend
-
-Runtime-agnostic routes and business logic. Run it through `apps/backend-worker` or `apps/backend-node`.
-
-- Run format/lint/type checks:
-
-```bash
-vp run backend#check
-```
-
-- Run the tests:
-
-```bash
-vp run backend#test
-```
-
-## apps/backend-node
-
-Runs `apps/backend` as a standalone Node.js server.
-
-- Debug locally (reloads on changes in `apps/backend` too):
-
-```bash
-vp run backend-node#dev
-```
-
-- Build (frontend + server bundle):
-
-```bash
-vp run -t backend-node#build
-```
-
-- Run the built bundle (frontend at `/`, API at `/api`, port from `PORT`):
-
-```bash
-vp run backend-node#start
-```
-
-## apps/frontend
-
-- Run format/lint/type checks:
-
-```bash
-vp run frontend#check
-```
-
-- Run the tests:
-
-```bash
-vp run frontend#test
-```
-
-- Run the dev server:
-
-```bash
+```sh
+vp install
 vp run frontend#dev
 ```
 
-- Build:
+表示されたURLを開いてください（通常は `http://localhost:5173`、使用中の場合は次のポート）。基準サイズは横向き1280×800、1024×768でも利用できます。画面は横4列を維持するため、それより狭い端末では横スクロールが必要です。
 
-```bash
+## デモ操作
+
+1. 職員カードの代わりに医師・薬剤師・臨床工学技士のいずれかを選びます。
+2. PIN `1234` を入力してログインします。数字キー、Backspace、Enter、Escでも操作できます。PIN入力は無操作で期限切れになります。
+3. 下部の「設定」→「端末設定」で設置病棟を選びます。職員選択だけでは病棟は変わりません。
+4. 「設定」→「業務画面設定」で自職種の設定を編集、または全病棟共通／端末病棟の設定を追加します。
+5. 左の部品を選び、右のセルをタップ・クリック、またはTabでセルに移動してEnterで配置します。同じ種類は移動し、重なる部品全体を置き換えます。×や「配置を外す」で削除します。
+6. 「決定」で保存すると業務画面に反映されます。「取消」は下書きを破棄します。未保存のまま戻る・画面を切り替える・ログアウトする場合は破棄を確認します。
+
+初期設定は次の組み合わせです。別の組み合わせでは職種の全病棟共通、病院全体の順に適用します。病院全体は参照のみです。
+
+| 職種         | 設置病棟                | 架空患者  |
+| ------------ | ----------------------- | --------- |
+| 医師         | 循環器内科病棟（5階東） | 山田 正雄 |
+| 薬剤師       | 消化器内科病棟（6階西） | 鈴木 和子 |
+| 臨床工学技士 | 集中治療室（3階）       | 田中 浩二 |
+
+与薬の未実施ボタンと全項目確認後の点検完了は、メモリ内のデモ記録を更新します。編集プレビューでは操作できません。実際の診療記録・機器操作ではありません。
+
+## 保存とリセット
+
+保存はそのブラウザ・オリジン内だけです。ホスト名、ポート、ブラウザを変えると別の設定になります。保存するのは次の2キーだけで、患者情報・PIN・ログイン状態・デモ記録は保存しません。
+
+| localStorageキー           | 内容                                 |
+| -------------------------- | ------------------------------------ |
+| `medical-support.terminal` | バージョン付き端末病棟               |
+| `medical-support.layouts`  | バージョン付き職種・病棟・部品の配置 |
+
+ログアウトしても設定は残り、再読み込みでは再ログインが必要です。再読み込みで与薬・点検のデモ記録は初期状態に戻ります。
+
+初期状態に戻すには、ブラウザの開発者ツール→Application→Local Storageで上記キーだけを削除して再読み込みしてください。またはConsoleで以下を実行します（保存済みの配置を削除します）。
+
+```js
+localStorage.removeItem('medical-support.terminal')
+localStorage.removeItem('medical-support.layouts')
+location.reload()
+```
+
+不正な端末設定は病棟未設定になります。ログイン後に病棟を選び直せます。不正・未対応バージョンのレイアウトは初期配置を表示して通知し、元のデータは明示的な保存まで残します。ストレージ保存に失敗すると端末設定は以前の選択を保ち、レイアウトは下書きを維持します。別画面でレイアウトが変更されていた場合は、保存前に再読み込みして開き直してください。
+
+## PWAと配信
+
+```sh
+vp run frontend#build
+vp run frontend#preview
+```
+
+production buildは `apps/frontend/dist` です。ルート `/` に配信し、`/login`、`/work`、`/settings/*` の直接アクセスを `index.html` にフォールバックさせてください。HTTPSで配信します。localhost・ループバックはローカル確認に使えます。`file://` やLAN内のHTTPアドレスはインストール確認に使わないでください。
+
+対応するChrome・Edgeのインストールメニュー、iPadのブラウザの共有→「ホーム画面に追加」から追加できます。インストールUIはブラウザによって異なります。起動表示はstandalone、横向きを指定しています。manifest、通常アイコン、maskableアイコン、Apple touch iconを同梱しています。アイコンの編集元は `apps/frontend/public/icons/app.svg` です。
+
+Service Worker・オフライン用キャッシュはありません。インストール後も起動・再読み込みには配信元への接続が必要です。インストールの要件は [MDNの説明](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Making_PWAs_installable) を参照してください。
+
+`public/_headers` は対応ホスト向けのレスポンスヘッダーです。他のホストでは同等の設定を行ってください。公開タイトルは `apps/frontend/.env` の `VITE_APP_TITLE` にあります。現在は環境固有の変数や秘密鍵は不要です。
+
+## 開発用の表示確認
+
+開発サーバーでのみ利用できます。production buildには含めません。
+
+- `/dev/components`：14種類の原寸・縮小表示、病棟、通常／読み込み／取得失敗／患者なし／欠損／長文／空の項目を確認できます。例：`/dev/components?component=vent&ward=icu&state=normal`。
+- `/dev/work?scene=doctor`、`pharm`、`ce`、`default`：固定の初期配置を閲覧できます。端末設定と保存済み配置を変更せず、デモ記録も更新できません。
+
+仕様は [docs/spec.md](docs/spec.md)、実装と検証記録は [docs/implementation-plan.md](docs/implementation-plan.md)、デザイン原本は [docs/design](docs/design/README.md) にあります。
+
+## 検証
+
+```sh
+vp check
+vp test
 vp run frontend#build
 ```
 
-- Preview the production build:
+テストはNode上で配置・設定・権限・認証状態・デモ取得／更新を確認します。表示・スクロール・タッチ・PWAはブラウザで確認します。ツール環境に問題がある場合は `vp env doctor` を実行してください。
 
-```bash
-vp run frontend#preview
+## 未接続の機能と既存バックエンド
+
+実カードリーダー、サーバー認証、API・DB、病院内の設定共有、サーバー排他制御、実患者情報・実診療記録への接続はありません。医療上の評価値・注意文・換算表示はデザイン由来の架空サンプルです。
+
+`apps/backend`（Hono）と `apps/backend-node` は既存のテンプレートとして残しています。フロントエンドは依存せずAPIを呼びません。将来接続する際は同一オリジン `/api` とHono RPCの型推論を使います。現在のdevサーバーにも `/api` プロキシ設定は残っています。
+
+既存Nodeサーバーを確認する場合のコマンドは以下です。フロントエンドのデモには不要です。
+
+```sh
+vp run backend-node#dev
+vp run -t backend-node#build
+vp run backend-node#start
 ```
+
+`vp run ready` はmonorepo全体のチェック・テスト・ビルドを実行します。

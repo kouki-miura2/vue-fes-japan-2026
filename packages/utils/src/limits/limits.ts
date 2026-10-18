@@ -15,11 +15,24 @@
  *   the spec marks it 暫定値.
  */
 export const LIMITS = {
-  // Examples — replace with the app's own entries:
-  // /** Max length (characters) of a display name. Checked in both the UI and the API. */
-  // nameMaxLength: 20,
-  // /** Storage quota per user, in bytes (300 MB). Checked in the API on upload. */
-  // userStorageBytes: 300 * 1024 * 1024,
-  // /** Number of items loaded per page in lists (newest first). Provisional. */
-  // listPageSize: 50,
+  /** Next demonstration inspection interval, in hours. Applied in the UI data simulation. Provisional. */
+  inspectionIntervalHours: 8,
+  /** Minimum PIN length, in digits. Checked in the UI; also required in the future API. */
+  pinMinLength: 4,
+  /** Maximum PIN length, in digits. Checked in the UI; also required in the future API. */
+  pinMaxLength: 6,
+  /** PIN inactivity timeout, in seconds. Checked in the UI. Provisional. */
+  pinTimeoutSec: 30,
+  /** Logical grid columns. Checked in layout validation in the UI. */
+  layoutColumns: 4,
+  /** Logical grid rows. Checked in layout validation in the UI. */
+  layoutRows: 2,
+  /** System area height, in CSS pixels. Applied in the UI. */
+  systemAreaHeightPx: 60,
+  /** Maximum hospital default layouts. Checked in UI settings. Provisional. */
+  hospitalLayouts: 1,
+  /** Maximum layouts per role and ward scope (including no ward). Checked in the UI. Provisional. */
+  layoutsPerScope: 1,
+  /** Maximum instances of one component type per layout. Checked in the UI. Provisional. */
+  componentInstancesPerLayout: 1,
 } as const

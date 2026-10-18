@@ -18,3 +18,8 @@ test('formatDate supports unpadded month and day', () => {
   expect(formatDate(new Date('2026-01-04T23:00:00Z'), 'M/d')).toBe('1/5')
   expect(formatDate(new Date('2026-12-24T23:00:00Z'), 'M/d')).toBe('12/25')
 })
+
+test('Japanese weekday follows the JST calendar across midnight', () => {
+  expect(formatDate(new Date('2026-10-17T14:59:59Z'), 'yyyy/MM/dd（EEE）')).toBe('2026/10/17（土）')
+  expect(formatDate(new Date('2026-10-17T15:00:00Z'), 'yyyy/MM/dd（EEE）')).toBe('2026/10/18（日）')
+})

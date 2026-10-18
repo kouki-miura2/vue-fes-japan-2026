@@ -1,3 +1,13 @@
+/* Login clock: digits and colon only, under the same OFL as the full Japanese fonts. */
+@font-face {
+  font-family: 'Noto Sans JP';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/noto-sans-jp/noto-sans-jp-clock-300.woff2') format('woff2');
+  unicode-range: U+0030-003A;
+}
+
 @font-face {
   font-family: 'Noto Sans JP';
   font-style: normal;

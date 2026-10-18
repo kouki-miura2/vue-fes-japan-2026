@@ -61,3 +61,15 @@ export const isSameDay = (a: Date, b: Date): boolean =>
 /** Number of calendar days from `b` to `a` in the app's time zone, ignoring time of day. */
 export const diffInDays = (a: Date, b: Date): number =>
   (startOfDay(a).getTime() - startOfDay(b).getTime()) / msPerDay
+
+/** Completed calendar years in the app's time zone. Invalid/future birth dates are unknown. */
+export const ageInYears = (birthDate: Date, now: Date): number | null => {
+  if (!Number.isFinite(birthDate.getTime()) || !Number.isFinite(now.getTime())) return null
+  const birth = toWallClock(birthDate)
+  const today = toWallClock(now)
+  if (startOfDay(birthDate).getTime() > startOfDay(now).getTime()) return null
+  const beforeBirthday =
+    today.getUTCMonth() < birth.getUTCMonth() ||
+    (today.getUTCMonth() === birth.getUTCMonth() && today.getUTCDate() < birth.getUTCDate())
+  return today.getUTCFullYear() - birth.getUTCFullYear() - Number(beforeBirthday)
+}

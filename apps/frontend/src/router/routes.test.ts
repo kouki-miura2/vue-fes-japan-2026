@@ -11,18 +11,31 @@ test('resolves the home route', () => {
   expect(resolved.name).toBe('home')
 })
 
-test('resolves the sample route', () => {
+test('unknown and removed starter paths resolve to the recovery page', () => {
   const router = createRouter({ history: createMemoryHistory(), routes })
 
-  const resolved = router.resolve('/sample')
-
-  expect(resolved.name).toBe('sample')
+  for (const path of ['/does-not-exist', '/sample'])
+    expect(router.resolve(path).name).toBe('not-found')
 })
 
-test('has no match for an unknown path', () => {
+test('resolves workspace and development gallery without loading SFCs', () => {
   const router = createRouter({ history: createMemoryHistory(), routes })
+  expect(router.resolve('/work').name).toBe('work')
+  expect(routes.find((route) => route.path === '/')?.redirect).toBe('/work')
+  expect(router.resolve('/dev/components').name).toBe('components')
+})
 
-  const resolved = router.resolve('/does-not-exist')
+test('resolves card login and both settings entries', () => {
+  const router = createRouter({ history: createMemoryHistory(), routes })
+  expect(router.resolve('/login').name).toBe('login')
+  expect(router.resolve('/settings/terminal').name).toBe('terminal')
+  expect(router.resolve('/settings/screens').name).toBe('screens')
+})
 
-  expect(resolved.matched).toHaveLength(0)
+test('new, edit and logout routes require login and static new takes precedence', () => {
+  const router = createRouter({ history: createMemoryHistory(), routes })
+  expect(router.resolve('/settings/screens/new?scope=all').name).toBe('screen-new')
+  expect(router.resolve('/settings/screens/h').name).toBe('screen-edit')
+  for (const path of ['/settings/screens/new', '/settings/screens/doctor-c5e', '/logout'])
+    expect(router.resolve(path).meta.requiresAuth).toBe(true)
 })

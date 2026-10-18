@@ -5,9 +5,18 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import { vuetify } from './plugins/vuetify.ts'
 import { router } from './router/index.ts'
+import { useLayoutsStore } from './stores/layouts.ts'
+import { useNotificationStore } from './stores/notification.ts'
+import { useWorkspaceStore } from './stores/workspace.ts'
+
+const pinia = createPinia()
+const warnings = [useWorkspaceStore(pinia).restore(), useLayoutsStore(pinia).restore()].filter(
+  Boolean,
+)
+if (warnings.length) useNotificationStore(pinia).show(warnings.join('\n'))
 
 createApp(App)
-  .use(createPinia())
+  .use(pinia)
   .use(router)
   .use(vuetify)
   // `retry: false`: without it, TanStack Query's default of 3 retries with exponential backoff

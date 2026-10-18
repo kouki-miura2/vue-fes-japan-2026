@@ -5,6 +5,8 @@ export default defineConfig({
     '*': 'vp check --fix',
   },
   fmt: {
+    // Preserve the original Claude Design export and its embedded assets.
+    ignorePatterns: ['docs/design/*.html'],
     semi: false,
     singleQuote: true,
     sortImports: true,
