@@ -10,9 +10,7 @@ export interface ClinicalRecord {
   wt: [date: string, value: number][]
   wtDelta: string
   wtDir: Level
-  wtTarget: string
   io: [date: string, input: number, urine: number][]
-  ioNote: string
   hpi: { dx: string; chips: string[]; prob: string[]; text: string }
   ecg: {
     t: string

@@ -11,7 +11,6 @@ const workspace = useWorkspaceStore()
 const auth = useAuthStore()
 const router = useRouter()
 const ward = computed(() => WARDS.find((entry) => entry.id === workspace.wardId))
-const development = import.meta.env.DEV
 const settingsOpen = ref(false)
 watch(
   () => auth.isAuthenticated,
@@ -37,20 +36,23 @@ const logout = () => {
     </div>
     <span v-else class="muted">未ログイン・デモ</span>
     <time class="clock"
-      ><span>{{ date }} JST</span><strong>{{ time }}</strong></time
-    >
-    <v-btn
-      v-if="development"
-      class="dev-tool"
-      to="/dev/components"
-      variant="tonal"
-      aria-label="部品確認"
-      >部品確認</v-btn
+      ><span>{{ date }}</span
+      ><strong>{{ time }}</strong></time
     >
     <template v-if="auth.isAuthenticated"
-      ><v-btn prepend-icon="mdi-cog-outline" variant="tonal" @click="settingsOpen = true"
+      ><v-btn
+        class="settings"
+        color="#16504B"
+        height="44"
+        prepend-icon="mdi-cog-outline"
+        @click="settingsOpen = true"
         >設定</v-btn
-      ><v-btn prepend-icon="mdi-logout" variant="outlined" @click="logout"
+      ><v-btn
+        class="logout"
+        variant="outlined"
+        height="44"
+        prepend-icon="mdi-logout"
+        @click="logout"
         >ログアウト</v-btn
       ></template
     >
@@ -62,8 +64,8 @@ const logout = () => {
 .system-bar {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 0 14px;
+  gap: 16px;
+  padding: 0 10px 0 18px;
   background: #0f3b37;
   color: white;
   height: var(--system-area-height);
@@ -85,25 +87,35 @@ const logout = () => {
 }
 .user {
   display: flex;
-  flex-direction: column;
-  line-height: 1.4;
+  align-items: baseline;
+  gap: 6px;
   white-space: nowrap;
+}
+.user strong {
+  font-weight: 600;
 }
 .clock {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  padding: 0 14px;
+  border-left: 1px solid #2e5c57;
+  border-right: 1px solid #2e5c57;
   white-space: nowrap;
+}
+.clock span {
+  color: #d6e8e5;
 }
 .clock strong {
   font-size: 22px;
+  font-weight: 600;
 }
 .system-bar > .v-btn {
   color: white;
+  font-weight: 600;
 }
-@media (max-width: 1200px) {
-  .dev-tool {
-    display: none;
-  }
+.system-bar > .logout {
+  border-color: #4f7f7a;
+  font-weight: 400;
 }
 </style>

@@ -23,7 +23,7 @@ test('card/PIN login selects the staff role and clears all pending credentials',
   expect(auth.submitPin()).toBe(true)
   expect(auth.user).toMatchObject({ id: 'staff-002', roleId: 'pharm' })
   expect(auth.pin).toBe('')
-  expect(auth.card).toBeNull()
+  expect(auth.cardId).toBeNull()
   expect(auth.deadline).toBeNull()
   auth.logout()
   expect(auth.user).toBeNull()
@@ -31,9 +31,14 @@ test('card/PIN login selects the staff role and clears all pending credentials',
   expect(auth.error).toBe('')
 })
 
-test('invalid card and PIN return to card wait without retaining the input', () => {
+test('a card is not checked until the PIN is submitted, and both factors fail alike', () => {
   const auth = useAuthStore()
   auth.readCard('unknown')
+  expect(auth.stage).toBe('pin')
+  expect(auth.error).toBe('')
+  expect(auth.cardId).toBe('unknown')
+  enter('1234')
+  expect(auth.submitPin()).toBe(false)
   expect(auth.error).toBe(AUTH_ERROR)
   expect(auth.stage).toBe('card')
   auth.readCard('staff-001')
@@ -41,8 +46,16 @@ test('invalid card and PIN return to card wait without retaining the input', () 
   expect(auth.submitPin()).toBe(false)
   expect(auth.error).toBe(AUTH_ERROR)
   expect(auth.pin).toBe('')
-  expect(auth.card).toBeNull()
+  expect(auth.cardId).toBeNull()
   expect(auth.isAuthenticated).toBe(false)
+})
+
+test('the store exposes no staff identity before both factors are verified', () => {
+  const auth = useAuthStore()
+  auth.readCard('staff-001')
+  enter('123')
+  expect(auth.user).toBeNull()
+  expect(Object.keys(auth.$state).sort()).toEqual(['cardId', 'deadline', 'error', 'pin', 'user'])
 })
 
 test('PIN input accepts single ASCII digits only, enforces bounds and supports cancellation', () => {
@@ -96,7 +109,7 @@ test('the exact deadline expires and clears the PIN on every input path', () => 
     expect(auth.isAuthenticated).toBe(false)
     expect(auth.error).toBe(TIMEOUT_ERROR)
     expect(auth.pin).toBe('')
-    expect(auth.card).toBeNull()
+    expect(auth.cardId).toBeNull()
     expect(auth.deadline).toBeNull()
   }
 })

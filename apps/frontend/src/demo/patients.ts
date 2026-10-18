@@ -29,7 +29,6 @@ export const getDemoPatient = async (
       birthDate: null,
       bed: null,
       weightKg: null,
-      tags: [],
     }
   }
   if (scenario === 'sparse' && patient.clinical) {
@@ -59,21 +58,17 @@ export const getDemoPatient = async (
       patient.clinical.dev[0][3] = '点検期限切れのサンプル 2026/10/01'
       patient.clinical.dev[0][5] = '2026/10/01'
     }
-    patient.name = '山田 アレクサンダー 正雄 サンプル患者'
+    patient.name = 'テスト アレクサンダー 患者 サンプル'
     if (patient.clinical) {
       patient.clinical.hpi.text = patient.clinical.hpi.text.repeat(4)
       patient.clinical.hpi.prob.push(
         '長いプロブレム名・経過情報が折り返されて全文を確認できる表示のデモ',
       )
     }
-    patient.kana = 'ヤマダ アレクサンダー マサオ サンプルカンジャ'
-    patient.tags = [
-      {
-        label: '長い注意事項があっても全文を確認できることを確認するためのデモ表示',
-        level: 'warning',
-      },
-      ...patient.tags,
-    ]
+    patient.kana = 'テスト アレクサンダー カンジャ サンプル'
+    if (patient.clinical?.al.drug[0])
+      patient.clinical.al.drug[0].n =
+        '長い薬剤名のアレルギーでも枠内に収まることを確認するためのデモ表示'
   }
   return patient
 }

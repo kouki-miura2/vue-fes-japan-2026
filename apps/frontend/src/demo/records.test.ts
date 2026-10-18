@@ -7,7 +7,7 @@ import type { DemoActionContext } from './records.ts'
 
 beforeEach(resetDemoRecords)
 const context: DemoActionContext = {
-  patientId: '0012-4587',
+  patientId: '00124587',
   preview: false,
   scenario: 'normal',
   at: new Date('2026-10-17T14:30:00Z'),
@@ -19,7 +19,7 @@ test('a dose is recorded once, remains isolated by patient and never changes the
   const results = await Promise.allSettled([giveDemoDose(action), giveDemoDose(action)])
   expect(results.map((result) => result.status).sort()).toEqual(['fulfilled', 'rejected'])
   expect((await read())?.clinical?.rx[3][2][2]).toBe('23:30')
-  expect((await read('0031-2290'))?.clinical?.rx[1][2][2]).toBe('due')
+  expect((await read('00312290'))?.clinical?.rx[1][2][2]).toBe('due')
   expect(PATIENTS[0].clinical?.rx[3][2][2]).toBe('due')
   resetDemoRecords()
   expect((await read())?.clinical?.rx[3][2][2]).toBe('due')
@@ -54,6 +54,6 @@ test('inspection requires the exact complete checklist and advances the next tim
     next: '10/18 07:30',
     by: 'デモ記録',
   })
-  expect((await read('0045-7713'))?.clinical?.chk.last).toBe('10/17 08:30')
+  expect((await read('00457713'))?.clinical?.chk.last).toBe('10/17 08:30')
   await expect(completeDemoInspection({ ...context, checked: items })).rejects.toThrow(/記録済み/)
 })

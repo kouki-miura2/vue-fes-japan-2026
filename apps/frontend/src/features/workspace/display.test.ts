@@ -1,6 +1,6 @@
 import { expect, test } from 'vite-plus/test'
 
-import { calendarDate, dateText, remainingDays, trend } from './display.ts'
+import { calendarDate, countSummary, dateText, remainingDays, trend } from './display.ts'
 
 test('calendar dates reject rollovers and handle unknown discharge plans', () => {
   expect(calendarDate('2026/02/30')).toBeNull()
@@ -22,4 +22,14 @@ test('trend distinguishes zero from unknown and handles formatted values', () =>
   expect(trend('0')).toBe('—')
   expect(trend('0', '')).toBe('—')
   expect(trend('未測定', '1')).toBe('—')
+})
+
+test('allergy and contraindication summaries keep unknown apart from none', () => {
+  expect(countSummary('アレルギー', null)).toEqual({ text: 'アレルギー未確認', level: 'unknown' })
+  expect(countSummary('アレルギー', [])).toEqual({ text: 'アレルギーなし', level: 'none' })
+  expect(countSummary('禁忌', ['NSAIDs']).text).toBe('禁忌：NSAIDs')
+  expect(countSummary('禁忌', ['NSAIDs', 'ヨード造影剤'])).toEqual({
+    text: '禁忌：2件以上あり',
+    level: 'present',
+  })
 })

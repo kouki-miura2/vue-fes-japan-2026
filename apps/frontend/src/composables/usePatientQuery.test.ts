@@ -24,37 +24,38 @@ const setup = (initial: PatientRequest) => {
 
 test('loads fictional patients without HTTP and keeps responses independent', async () => {
   const fetchSpy = vi.spyOn(globalThis, 'fetch')
-  const { request, query, client } = setup({ patientId: '0012-4587', scenario: 'normal' })
+  const { request, query, client } = setup({ patientId: '00124587', scenario: 'normal' })
   await vi.waitFor(() => expect(query.isSuccess.value).toBe(true))
-  expect(query.data.value?.name).toBe('山田 正雄')
-  request.value = { patientId: '0045-7713', scenario: 'normal' }
-  await vi.waitFor(() => expect(query.data.value?.id).toBe('0045-7713'))
-  expect(query.data.value?.name).toBe('田中 浩二')
-  expect(client.getQueryData(['demo-patient', '0012-4587', 'normal'])).toMatchObject({
-    name: '山田 正雄',
+  expect(query.data.value?.name).toBe('テスト 患者')
+  request.value = { patientId: '00457713', scenario: 'normal' }
+  await vi.waitFor(() => expect(query.data.value?.id).toBe('00457713'))
+  expect(client.getQueryData(['demo-patient', '00124587', 'normal'])).toMatchObject({
+    id: '00124587',
+    name: 'テスト 患者',
   })
-  request.value = { patientId: '0045-7713', scenario: 'long' }
+  request.value = { patientId: '00457713', scenario: 'long' }
   await vi.waitFor(() => expect(query.data.value?.name).toContain('アレクサンダー'))
-  expect(client.getQueryData(['demo-patient', '0045-7713', 'normal'])).toMatchObject({
-    name: '田中 浩二',
+  expect(client.getQueryData(['demo-patient', '00457713', 'normal'])).toMatchObject({
+    id: '00457713',
+    name: 'テスト 患者',
   })
   expect(fetchSpy).not.toHaveBeenCalled()
 })
 
 test('separates pending, error, empty and incomplete data without retaining another patient', async () => {
-  const { request, query } = setup({ patientId: '0012-4587', scenario: 'normal' })
+  const { request, query } = setup({ patientId: '00124587', scenario: 'normal' })
   await vi.waitFor(() => expect(query.isSuccess.value).toBe(true))
-  request.value = { patientId: '0045-7713', scenario: 'loading' }
+  request.value = { patientId: '00457713', scenario: 'loading' }
   await vi.waitFor(() => expect(query.isPending.value).toBe(true))
   expect(query.data.value).toBeUndefined()
-  request.value = { patientId: '0045-7713', scenario: 'error' }
+  request.value = { patientId: '00457713', scenario: 'error' }
   await vi.waitFor(() => expect(query.isError.value).toBe(true))
   expect(query.error.value?.message).toContain('取得できません')
-  request.value = { patientId: '0045-7713', scenario: 'empty' }
+  request.value = { patientId: '00457713', scenario: 'empty' }
   await vi.waitFor(() => expect(query.isSuccess.value).toBe(true))
   expect(query.data.value).toBeNull()
-  request.value = { patientId: '0045-7713', scenario: 'missing' }
+  request.value = { patientId: '00457713', scenario: 'missing' }
   await vi.waitFor(() => expect(query.data.value?.name).toBeNull())
   expect(query.data.value?.weightKg).toBeNull()
-  expect(query.data.value?.id).toBe('0045-7713')
+  expect(query.data.value?.id).toBe('00457713')
 })

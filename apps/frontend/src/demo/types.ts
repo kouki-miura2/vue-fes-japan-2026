@@ -10,7 +10,6 @@ export type PatientScenario =
   | 'missing'
   | 'long'
   | 'sparse'
-export type AttentionLevel = 'error' | 'warning' | 'success' | 'info'
 export interface Patient {
   clinical: ClinicalRecord | null
   id: string
@@ -21,5 +20,4 @@ export interface Patient {
   birthDate: string | null
   bed: string | null
   weightKg: number | null
-  tags: { label: string; level: AttentionLevel }[]
 }

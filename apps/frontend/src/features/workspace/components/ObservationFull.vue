@@ -27,7 +27,6 @@
         <div class="days" :style="{ gridTemplateColumns: `repeat(${bars.length || 1}, 1fr)` }">
           <span v-for="w in bars" :key="w.d">{{ w.d }}</span>
         </div>
-        <p v-if="bars.length" class="lbl">{{ p.wtTarget }}</p>
         <div class="lbl b io-h">水分出納 {{ io ? `（${io.d}・確定日）` : '未取得' }}</div>
         <div v-if="io" class="io">
           <span class="ink2">IN</span><span class="r">{{ io.i }} mL</span>
@@ -35,7 +34,6 @@
           <span class="ink2">バランス</span
           ><span class="r b" :class="{ 'lvfg-warn': io.pos }">{{ io.b }} mL</span>
         </div>
-        <div class="lbl">{{ p.ioNote }}</div>
       </div>
     </div>
   </WidgetCard>
@@ -55,7 +53,7 @@ const bars = computed(() => {
   const min = Math.min(...values.map((row) => row[1]))
   const max = Math.max(...values.map((row) => row[1]))
   return values.map((row, index) => ({
-    d: row[0],
+    d: row[0].slice(5),
     v: row[1].toFixed(1),
     last: index === values.length - 1,
     h: `${10 + ((row[1] - min) / (max - min || 1)) * 40}px`,

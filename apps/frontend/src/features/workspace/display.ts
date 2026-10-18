@@ -37,3 +37,19 @@ export const remainingDays = (value: string, now: Date) => {
   const days = diffInDays(date, now)
   return days > 0 ? `あと ${days}日` : days === 0 ? '本日予定' : `予定日から ${-days}日経過`
 }
+/**
+ * One-line summary for the patient header. Unknown (not yet confirmed) is kept distinct from
+ * "none", so missing data is never shown as safe; two or more items point to the detail widget.
+ */
+export const countSummary = (
+  kind: string,
+  names: string[] | null,
+  present: 'present' | 'contra' = 'present',
+) =>
+  names === null
+    ? { text: `${kind}未確認`, level: 'unknown' as const }
+    : names.length === 0
+      ? { text: `${kind}なし`, level: 'none' as const }
+      : names.length === 1
+        ? { text: `${kind}：${names[0]}`, level: present }
+        : { text: `${kind}：2件以上あり`, level: present }

@@ -11,7 +11,6 @@ defineProps<{ items: Vital[]; columns: number }>()
       <div class="value" :class="fg(item[4])">
         {{ item[1] || '未測定' }} <span class="unit">{{ item[2] }}</span>
       </div>
-      <div v-if="item[3]" class="note">{{ item[3] }}</div>
     </div>
   </div>
 </template>
@@ -25,8 +24,8 @@ defineProps<{ items: Vital[]; columns: number }>()
   font-weight: 700;
   line-height: 1.3;
 }
-.unit,
-.note {
+.unit {
+  white-space: nowrap;
   font-size: 16px;
   font-weight: 400;
   color: #5e6a67;

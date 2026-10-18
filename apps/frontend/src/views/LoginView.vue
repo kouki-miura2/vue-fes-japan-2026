@@ -44,8 +44,16 @@ onBeforeUnmount(() => {
   window.removeEventListener('focus', syncDeadline)
   auth.cancelPin()
 })
-const submit = () => {
-  if (auth.submitPin()) void router.replace('/work')
+// Covers verification and loading the work screen, so the card screen never flashes in between.
+const submitting = ref(false)
+const submit = async () => {
+  if (submitting.value) return
+  submitting.value = true
+  try {
+    if (auth.submitPin()) await router.replace('/work')
+  } finally {
+    submitting.value = false
+  }
 }
 const onKeydown = (event: KeyboardEvent) => {
   if (auth.stage !== 'pin' || event.ctrlKey || event.metaKey || event.altKey) return
@@ -62,7 +70,7 @@ const onKeydown = (event: KeyboardEvent) => {
     auth.cancelPin()
   } else if (event.key === 'Enter') {
     event.preventDefault()
-    submit()
+    void submit()
   }
 }
 </script>
@@ -80,7 +88,12 @@ const onKeydown = (event: KeyboardEvent) => {
       <time>{{ formatDate(now, 'HH:mm') }}</time>
     </aside>
     <div class="stage">
-      <div v-if="auth.stage === 'card'" class="card-stage">
+      <div v-if="submitting" class="busy-stage" role="status">
+        <v-progress-circular indeterminate color="primary" size="64" width="5" />
+        <h1>認証しています</h1>
+        <p>しばらくお待ちください</p>
+      </div>
+      <div v-else-if="auth.stage === 'card'" class="card-stage">
         <v-alert v-if="auth.error" type="error" role="alert">{{ auth.error }}</v-alert>
         <v-alert v-if="!ward" type="warning"
           >病棟が未設定です。ログイン後に端末設定から病棟を選択してください。</v-alert
@@ -112,42 +125,44 @@ const onKeydown = (event: KeyboardEvent) => {
         </div>
       </div>
       <div v-else ref="pinPanel" class="pin-stage" tabindex="-1" aria-label="PIN入力">
-        <v-chip color="success" prepend-icon="mdi-card-account-details-outline"
-          >職員カードを読み取りました</v-chip
-        >
-        <div class="who">
-          <h1>{{ auth.card?.name }}</h1>
-          <p>{{ auth.card?.roleName }}</p>
-        </div>
-        <p>PINを入力してください（{{ LIMITS.pinMinLength }}〜{{ LIMITS.pinMaxLength }}桁）</p>
+        <h1>PINを入力してください</h1>
+        <p class="msg">
+          {{ LIMITS.pinMinLength }}〜{{
+            LIMITS.pinMaxLength
+          }}桁の数字。職員カードとPINをあわせて確認します。
+        </p>
         <div class="dots" role="status" :aria-label="`PIN ${auth.pin.length}桁入力済み`">
           <span
             v-for="index in LIMITS.pinMaxLength"
             :key="index"
             class="dot"
-            :class="{ on: index <= auth.pin.length }"
+            :class="{ on: index <= auth.pin.length, opt: index > LIMITS.pinMinLength }"
           />
         </div>
         <div class="timer">
           <div>
-            入力待ち <span role="timer">あと {{ remaining }} 秒</span>
+            <span>入力待ち</span><span role="timer">あと {{ remaining }} 秒</span>
           </div>
           <v-progress-linear
             :model-value="(remaining / LIMITS.pinTimeoutSec) * 100"
-            color="primary"
+            :color="remaining <= 10 ? 'error' : 'primary'"
+            bg-color="#C9D1CE"
+            bg-opacity="1"
             height="4"
+            rounded
           />
         </div>
         <PinKeypad @digit="auth.pressDigit" @remove="auth.backspace" @cancel="auth.cancelPin" />
         <v-btn
           block
+          class="submit"
           color="primary"
-          height="56"
+          height="60"
           :disabled="auth.pin.length < LIMITS.pinMinLength"
           @click="submit"
           >ログイン</v-btn
         >
-        <p class="hint">カード読み取りと認証のデモです。デモ用PIN：{{ DEMO_PIN }}</p>
+        <p class="hint">デモ用 PIN：{{ DEMO_PIN }}（それ以外はエラー）</p>
       </div>
     </div>
   </section>
@@ -208,6 +223,7 @@ time {
   overflow: auto;
   background: #f6f8f7;
 }
+.busy-stage,
 .card-stage,
 .pin-stage {
   display: flex;
@@ -222,8 +238,24 @@ time {
 }
 .pin-stage {
   max-width: 420px;
-  gap: 12px;
+  gap: 16px;
   outline: none;
+}
+.pin-stage h1 {
+  font-size: 26px;
+}
+.busy-stage {
+  gap: 16px;
+}
+.busy-stage p {
+  color: #4a5653;
+}
+.msg {
+  color: #4a5653;
+  text-align: center;
+}
+.submit {
+  font-weight: 700;
 }
 h1,
 p {
@@ -319,10 +351,6 @@ h1 {
   font-weight: 600;
   color: #16201e;
 }
-.who {
-  text-align: center;
-}
-.who p,
 .hint {
   color: #5e6a67;
 }
@@ -342,6 +370,9 @@ h1 {
   border: 2px solid #9aa5a2;
   background: white;
 }
+.dot.opt {
+  border-color: #d3dad7;
+}
 .dot.on {
   background: #0e6e66;
   border-color: #0e6e66;
@@ -353,7 +384,7 @@ h1 {
 .timer > div:first-child {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 }
 .card-stage > .v-alert {
   width: 100%;

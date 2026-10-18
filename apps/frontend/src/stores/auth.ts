@@ -10,17 +10,22 @@ export const AUTH_ERROR =
 export const TIMEOUT_ERROR = '一定時間PINの入力がなかったため、最初からやり直してください。'
 type Staff = (typeof STAFF)[number]
 
-/** Demo identity only. Credentials and sessions are never persisted. */
+/**
+ * Card + PIN as two factors, verified together. A read card is held only as an unverified ID:
+ * it is never looked up before the PIN is submitted, so the screen can't reveal whether a card
+ * is registered or whose it is, and a failure never says which factor was wrong.
+ * Demo identity only. Credentials and sessions are never persisted.
+ */
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<Staff | null>(null)
-  const card = ref<Staff | null>(null)
+  const cardId = ref<string | null>(null)
   const pin = ref('')
   const deadline = ref<number | null>(null)
   const error = ref('')
   const isAuthenticated = computed(() => user.value !== null)
-  const stage = computed(() => (card.value ? 'pin' : 'card'))
+  const stage = computed(() => (cardId.value === null ? 'card' : 'pin'))
   const clearAttempt = () => {
-    card.value = null
+    cardId.value = null
     pin.value = ''
     deadline.value = null
   }
@@ -38,26 +43,26 @@ export const useAuthStore = defineStore('auth', () => {
   const refreshDeadline = () => {
     deadline.value = Date.now() + LIMITS.pinTimeoutSec * 1000
   }
-  const readCard = (staffId: string) => {
+  const readCard = (id: string) => {
     clearAttempt()
     error.value = ''
     if (isAuthenticated.value) return
-    const staff = STAFF.find((entry) => entry.id === staffId)
-    if (!staff) {
-      fail(AUTH_ERROR)
-      return
-    }
-    card.value = { ...staff }
+    cardId.value = id
     refreshDeadline()
   }
   const pressDigit = (digit: string) => {
-    if (expire() || !card.value || !/^\d$/.test(digit) || pin.value.length >= LIMITS.pinMaxLength)
+    if (
+      expire() ||
+      cardId.value === null ||
+      !/^\d$/.test(digit) ||
+      pin.value.length >= LIMITS.pinMaxLength
+    )
       return
     pin.value += digit
     refreshDeadline()
   }
   const backspace = () => {
-    if (expire() || !card.value) return
+    if (expire() || cardId.value === null) return
     pin.value = pin.value.slice(0, -1)
     refreshDeadline()
   }
@@ -65,19 +70,26 @@ export const useAuthStore = defineStore('auth', () => {
     clearAttempt()
     error.value = ''
   }
+  /** Stand-in for the future server check: both factors are evaluated before either decides. */
+  const verify = (id: string, value: string) => {
+    const staff = STAFF.find((entry) => entry.id === id)
+    const pinMatches = value === DEMO_PIN
+    return staff && pinMatches ? staff : null
+  }
   const submitPin = () => {
     if (
       expire() ||
-      !card.value ||
+      cardId.value === null ||
       pin.value.length < LIMITS.pinMinLength ||
       pin.value.length > LIMITS.pinMaxLength
     )
       return false
-    if (pin.value !== DEMO_PIN) {
+    const staff = verify(cardId.value, pin.value)
+    if (!staff) {
       fail(AUTH_ERROR)
       return false
     }
-    user.value = { ...card.value }
+    user.value = { ...staff }
     clearAttempt()
     error.value = ''
     return true
@@ -88,7 +100,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
   return {
     user,
-    card,
+    cardId,
     pin,
     deadline,
     error,

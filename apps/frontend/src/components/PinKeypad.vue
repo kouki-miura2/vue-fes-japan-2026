@@ -7,14 +7,22 @@ const emit = defineEmits<{ digit: [value: string]; remove: []; cancel: [] }>()
       v-for="digit in ['1', '2', '3', '4', '5', '6', '7', '8', '9']"
       :key="digit"
       variant="outlined"
-      height="60"
+      height="66"
       :aria-label="`数字${digit}`"
       @click="emit('digit', digit)"
       >{{ digit }}</v-btn
     >
-    <v-btn variant="tonal" height="60" @click="emit('cancel')">中止</v-btn
-    ><v-btn variant="outlined" height="60" aria-label="数字0" @click="emit('digit', '0')">0</v-btn
-    ><v-btn variant="tonal" height="60" aria-label="PINを1桁削除" @click="emit('remove')"
+    <v-btn variant="tonal" color="#4A5653" height="66" class="fn" @click="emit('cancel')"
+      >中止</v-btn
+    ><v-btn variant="outlined" height="66" aria-label="数字0" @click="emit('digit', '0')">0</v-btn
+    ><v-btn
+      variant="tonal"
+      color="#4A5653"
+      height="66"
+      class="fn"
+      prepend-icon="mdi-backspace-outline"
+      aria-label="PINを1桁削除"
+      @click="emit('remove')"
       >削除</v-btn
     >
   </div>
@@ -27,9 +35,10 @@ const emit = defineEmits<{ digit: [value: string]; remove: []; cancel: [] }>()
   gap: 10px;
 }
 .v-btn {
-  font-size: 24px;
+  border-color: #c9d1ce;
+  background: #ffffff;
 }
-.v-btn--variant-tonal {
-  font-size: 16px;
+.v-btn.fn {
+  background: #f3f6f5;
 }
 </style>

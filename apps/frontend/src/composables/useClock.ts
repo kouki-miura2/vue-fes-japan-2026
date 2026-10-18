@@ -8,7 +8,7 @@ export const useClock = () => {
     now.value = new Date()
   }, 1000)
   onScopeDispose(() => clearInterval(timer))
-  const date = computed(() => formatDate(now.value, 'yyyy/MM/dd'))
+  const date = computed(() => formatDate(now.value, 'yyyy/MM/dd（EEE）'))
   const time = computed(() => formatDate(now.value, 'HH:mm'))
   return { now, date, time }
 }

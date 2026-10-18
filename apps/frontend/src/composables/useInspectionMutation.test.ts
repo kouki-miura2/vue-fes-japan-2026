@@ -14,7 +14,7 @@ test('an incomplete inspection fails without invalidating existing patient data'
   try {
     await expect(
       mutation.mutateAsync({
-        patientId: '0045-7713',
+        patientId: '00457713',
         preview: false,
         scenario: 'normal',
         at: new Date('2026-10-17T01:00:00Z'),
