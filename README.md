@@ -74,6 +74,7 @@ Service Worker・オフライン用キャッシュはありません。インス
 
 - `/dev/components`：14種類の原寸・縮小表示、病棟、通常／読み込み／取得失敗／患者なし／欠損／長文／空の項目を確認できます。例：`/dev/components?component=vent&ward=icu&state=normal`。
 - `/dev/work?scene=doctor`、`pharm`、`ce`、`default`：固定の初期配置を閲覧できます。端末設定と保存済み配置を変更せず、デモ記録も更新できません。
+- `/dev/lazy`：14種類のボタンを押すと、そのコンポーネントを動的コンポーネントで読み込んで表示します。開発者ツールのネットワークタブで、初回だけ対象の `.vue` ファイルが読み込まれてから描画される流れを確認できます。
 
 仕様は [docs/spec.md](docs/spec.md)、実装と検証記録は [docs/implementation-plan.md](docs/implementation-plan.md)、デザイン原本は [docs/design](docs/design/README.md) にあります。
 

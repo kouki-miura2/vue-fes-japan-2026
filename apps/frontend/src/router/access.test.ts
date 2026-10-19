@@ -14,6 +14,7 @@ test('work and settings require login, public login and developer previews remai
   expect(resolveAccess(router.resolve('/login'), false)).toBe(true)
   expect(resolveAccess(router.resolve('/login'), true)).toBe('/work')
   expect(resolveAccess(router.resolve('/dev/components'), false)).toBe(true)
+  expect(resolveAccess(router.resolve('/dev/lazy'), false)).toBe(true)
   expect(resolveAccess(router.resolve('/dev/work?scene=ce'), false)).toBe(true)
   expect(resolveAccess(router.resolve('/work?scene=ce'), false)).toBe('/login')
 })

@@ -51,6 +51,11 @@ export const routes: RouteRecordRaw[] = [
           name: 'demo-work',
           component: () => import('../views/DemoWorkView.vue'),
         },
+        {
+          path: '/dev/lazy',
+          name: 'lazy-demo',
+          component: () => import('../views/LazyLoadDemoView.vue'),
+        },
       ]
     : []),
   {

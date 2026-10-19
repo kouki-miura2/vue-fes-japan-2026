@@ -23,6 +23,7 @@ test('resolves workspace and development gallery without loading SFCs', () => {
   expect(router.resolve('/work').name).toBe('work')
   expect(routes.find((route) => route.path === '/')?.redirect).toBe('/work')
   expect(router.resolve('/dev/components').name).toBe('components')
+  expect(router.resolve('/dev/lazy').name).toBe('lazy-demo')
 })
 
 test('resolves card login and both settings entries', () => {
